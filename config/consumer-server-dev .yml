@@ -1,0 +1,167 @@
+# 加解密根密码
+jasypt:
+  encryptor:
+    password: secloud
+
+# Logger Config  mybatis 日志级别 debugger会输出sql和参数 上线需要改成info
+logging:
+  level:
+    com.sinosoft.seproduct: debug
+    com.sinosoft.famp: debug
+ 
+spring:
+  # redis 相关
+  redis:
+    password:
+    host: secloud-redis
+    port: 63791
+    database: 0
+  # zipkin
+  zipkin:
+    enabled: true
+    base-url: http://secloud-zipkin
+  sleuth:
+    web:
+      client:
+        enabled: true
+    sampler:
+      # 默认的采样比率为0.1，不能看到所有请求数据
+      # 更改采样比率为1，就能看到所有的请求数据了，但是这样会增加接口调用延迟
+      probability: 1.0
+  # 数据源
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://secloud-mysql:3306/famp?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true&nullCatalogMeansCurrent=true
+  servlet:
+    multipart:
+      maxFileSize: "50MB"
+      maxRequestSize: "50MB"
+
+# 文件系统
+minio:
+  url: http://secloud-minio:9000
+  access-key: secloud
+  secret-key: P@ssw0rdsecloud
+  
+# 暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+# feign 配置
+feign:
+  hystrix:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+# hystrix If you need to use ThreadLocal bound variables in your RequestInterceptor`s
+# you will need to either set the thread isolation strategy for Hystrix to `SEMAPHORE or disable Hystrix in Feign.
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+          thread:
+            timeoutInMilliseconds: 60000
+  shareSecurityContext: true
+
+#请求处理的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+
+# mybaits-plus配置
+mybatis-plus:
+  # MyBatis Mapper所对应的XML文件位置
+  mapper-locations: classpath:/mapper/*Mapper.xml,classpath:/com/sinosoft/**/mapper/*Mapper.xml
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      # 主键类型 0:数据库ID自增 1.未定义 2.用户输入 3 id_worker 4.uuid 5.id_worker字符串表示
+      id-type: 0
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: 1
+      # 默认数据库表下划线命名
+      table-underline: true
+  configuration:
+    map-underscore-to-camel-case: true
+
+#swagger公共信息
+swagger:
+  host: secloud-gateway:9999 
+  title: Secloud Swagger API
+  description: Secloud微服务框架
+  version: 1.0.0
+  license: Powered By Secloud
+  licenseUrl: https://secloud.com/
+  terms-of-service-url: https://secloud.com/
+  contact:
+    name: secloud
+    email: secloud@gmail.com
+    url: https://secloud.com/about.html
+  authorization:
+    name: secloud OAuth
+    auth-regex: ^.*$
+    authorization-scope-list:
+      - scope: server
+        description: server all
+    token-url-list:
+      - http://secloud-gateway:9999/auth/oauth/token
+
+## spring security 配置
+security:
+  oauth2:
+    client:
+      client-id: ENC(syAt8TIFNAVWQ2uSYXONTA==)
+      client-secret: ENC(syAt8TIFNAVWQ2uSYXONTA==)
+      scope: server
+      # 默认放行url,如果子模块重写这里的配置就会被覆盖
+      ignore-urls:
+        - /actuator/**
+        - /v2/api-docs
+        - /inner/**
+        - /ignore/**
+    resource:
+      loadBalanced: true
+      token-info-uri: http://secloud-auth/oauth/check_token
+
+## 短信配置:
+smsConfig:
+  smsServiceUrl: http://112.74.69.4/smsservice/services/sendSMSService?wsdl
+  smsSendOpen: false
+
+## 附件预览配置
+previewConfig:
+  fastUrl: http://192.168.8.15:9999/fa-pro-fastdfs
+  baseUrl: /fa-pro-preview
+
+## 公用路径配置信息
+pathConfig:
+  rootPath: D:/secloud
+  ## 临时文件存放路径
+  tempPath: ${pathConfig.rootPath}/file/tempfile/
+  synOutterTempPath: ${pathConfig.rootPath}/outter/temp
+  synOutterSourcePath: ${pathConfig.rootPath}/outter/source
+  synOutterBackupPath: ${pathConfig.rootPath}/outter/backup
+  synInnerSourcePath: ${pathConfig.rootPath}/inner/source
+  synInnerBackupPath: ${pathConfig.rootPath}/inner/backup
+  synInnerErrorPath: ${pathConfig.rootPath}/inner/error  
