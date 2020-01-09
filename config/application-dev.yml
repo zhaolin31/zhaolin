@@ -165,3 +165,5 @@ pathConfig:
   synInnerSourcePath: ${pathConfig.rootPath}/inner/source
   synInnerBackupPath: ${pathConfig.rootPath}/inner/backup
   synInnerErrorPath: ${pathConfig.rootPath}/inner/error  
+
+testValue: testsssss
